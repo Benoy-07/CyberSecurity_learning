@@ -9,7 +9,7 @@ step-2: type --------> gubster -u https://fakebank.thm -w  wordlist.txt dir
 <br>
 <br>
 
-![terminal](image/cs1.jpg)
+![terminal](image/CS1.jpg)
 <br>
 step-3: এখন browser's address bar এ <b>/bank-transfer<b> লেখে  enter করলে টাকা ট্রান্সফার এর জায়গা পেয়ে যাবো। এভাবে হ্যাকাররা টাকা চুরি করে।
 
