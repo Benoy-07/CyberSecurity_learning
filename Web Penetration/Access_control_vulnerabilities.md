@@ -315,3 +315,289 @@ website.com/profile?id=101
 ```Submit carlos API ``` <br>
 `(DONE)`
 
+<br><br><br><br>
+
+## 🔎 Masking কী?
+
+Data Masking হলো একটি technique যেখানে sensitive information আংশিকভাবে hide করা হয়, কিন্তু data-এর structure বা কিছু অংশ visible রাখা হয়। 🔐
+
+এর উদ্দেশ্য হলো data protect করা, কিন্তু একই সাথে user যেন data চিনতে পারে।<br>
+
+Example:<br>
+
+- `Original: 1234 5678 9012 3456`<br>
+`Masked: **** **** **** 3456`
+- password mask
+### Developer কীভাবে Masking ব্যবহার করে
+
+Developerরা sensitive data protect করার জন্য **data masking implement করে**।
+
+তারা সাধারণত:
+
+- Sensitive data এর কিছু অংশ **hide করে**  
+- শুধু **শেষের কিছু digit বা character দেখায়**  
+- UI বা API response এ **masked value return করে**
+
+### 🕵️ Attacker কী করার চেষ্টা করে
+
+যদি system এ **proper security না থাকে**, attacker কিছু জিনিস চেষ্টা করতে পারে:
+
+ **API response inspect করা**
+
+অনেক সময় UI তে data masked থাকে,  
+কিন্তু API response এ **full data পাঠানো হয়**।
+
+Example API response:
+
+`{`
+`"cardNumber": "1234567890123456"`
+`}`
+
+
+UI তে দেখা যায়:
+
+`**** **** **** 3456`
+
+# Task 8
+![](images/ACV53.png)<br><br>
+`After login`
+![](images/ACV54.png)<br><br>
+`Password UI তে mask করা। কিন্তু inspect করে দেখলাম যে password দেখা যাচ্ছে। তাহলে কোনোভাবে administrator এ যাইতে পারলে ঔটা inspect করে ঔ password টাও পাইতে পারি`
+![](images/ACV55.png)<br><br>
+`administrator দিলাম`
+![](images/ACV56.png)<br><br>
+`হয়ে গেছে!!!!`<br>
+![](images/ACV57.png)<br><br>
+`inspect করে administrator এর password টা পেয়ে গেলাম।`
+![](images/ACV58.png)<br><br>
+` Administrator এর id password দিয়ে login করলাম`<br>
+![](images/ACV59.png)<br><br>
+`Go to admin pannel`<br>
+![](images/ACV60.png)<br><br>
+![](images/ACV61.png)<br><br>
+```Delete user carlos ``` <br>
+`(DONE)`
+
+
+<br><br><br><br>
+## Insecure Direct Object References (IDOR)
+
+**IDOR** তখন হয় যখন application **direct object ID ব্যবহার করে data access দেয়**, কিন্তু check করে না user এর **permission আছে কিনা**।
+
+### Example
+`site.com/account?id=123`
+
+User যদি `123` change করে `124` দেয়:<br>
+`site.com/account?id=124`<br>
+<br>
+➡️ এতে যদি **অন্য user এর account data দেখা যায়**, তাহলে সেটা **IDOR vulnerability**।<br>
+
+👉 কারণ server check করছে না user এই data access করতে পারবে কিনা।
+
+## Direct Reference to Static Files
+
+কখনো **sensitive file direct URL দিয়ে access করা যায়**।
+
+### Example
+`site.com/static/users/report.pdf` or `site.com/private/contract.pdf`
+
+
+➡️ যদি **authentication ছাড়া download করা যায়**, তাহলে এটা **access control vulnerability**।
+
+---
+
+## Vulnerabilities in Multi-Step Process
+
+কিছু action **multiple step এ হয়**, কিন্তু server সব step **properly verify করে না**।
+
+### Example
+
+Online purchase flow:
+
+1. Add to cart  
+2. Payment  
+3. Confirm order  
+
+যদি attacker **step skip করে সরাসরি confirm request পাঠায়**, তাহলে **payment ছাড়া order complete হতে পারে**।
+
+👉 এটাকে বলে **multi-step process vulnerability**।
+
+---
+
+## Vulnerabilities in Referrer-Based Control
+
+কিছু website **HTTP Referrer header দেখে access control করে**।
+
+### Example
+`Referer: site.com/admin`
+
+Server ভাবে request **admin page থেকে এসেছে**।
+
+কিন্তু attacker সহজেই **referrer change করতে পারে**।
+
+👉 Tool ব্যবহার করে **fake referrer পাঠানো যায়**।
+
+তাই এটা **secure method না**।
+
+---
+
+## Vulnerabilities in Location-Based Control
+
+কিছু website **user location বা IP address দেখে access control করে**।
+
+### Example
+
+Admin page শুধু **office IP থেকে open হবে**।
+
+কিন্তু attacker করতে পারে:
+
+- VPN use
+- Proxy use
+- IP spoofing (কিছু ক্ষেত্রে)
+
+➡️ তখন attacker **restriction bypass করতে পারে**।
+
+
+<br><br><br><br>
+
+# Task 9
+
+`IDOR এর problem`
+![](images/ACV62.png)<br><br>
+![](images/ACV63.png)<br><br>
+`Live Chat এ গিয়ে একটু Hi Hello করলাম। তারপর view transcript এ  ক্লিক করলে একটা file download হইলো 2.txt নামে।`<br>
+
+![](images/ACV64.png)<br><br>
+`২ দেখে ধারনা করলাম এর ID মনে হয় এইটা। Burpsuit গিয়ে দেখলাম এর object ID 2।`<br>
+![](images/ACV65.png)<br><br>
+`repeater এ পাঠায় দিলাম।`<br>
+![](images/ACV66.png)<br><br>
+`এবার ID change করে 1 করলাম। করে দেখি পাসওয়ার্ড পেয়ে গেছি।`<br>
+![](images/ACV67.png)<br><br>
+`Password দিয়ে carlos login করলাম`<br>
+![](images/ACV68.png)<br><br>
+`(solved)`
+
+
+<br><br><br><br>
+
+### URL-based access control bypass
+
+Problem ta ki---<br>
+ওয়েবসাইটে একটা admin panel আছে: /admin<br>
+
+কিন্তু normal user browser দিয়ে গেলে access পাবে না, কারণ front-end system (proxy / load balancer / WAF) external request block করে দেয়।<br>
+
+মানে তুমি যদি যাও: `https://target.com/admin` <br>
+তাহলে response হবে: `403 Forbidden` <br>
+
+কিন্তু problem হচ্ছে:<br>
+
+➡️ Back-end framework X-Original-URL header support করে।<br>
+
+এটা attacker use করে restriction bypass করতে পারে।<br>
+
+X-Original-URL হলো একটা special HTTP header। এটা back-end কে বলে: `Actually request ta kon URL er jonno chilo`
+
+- Example
+
+`GET /admin HTTP/1.1`<br>
+`Host: vulnerable-website.com`<br>
+
+Front-end দেখবে: /admin। তাই block করবে।<br>
+
+### Request modify করো, Header add করো:--<br>
+
+`GET / HTTP/1.1` <br>
+`Host: vulnerable-website.com`<br>
+`X-Original-URL: /admin`<br>
+
+Front-end দেখবে: `Path = /` <br>
+তাই block করবে না।<br>
+
+কিন্তু back-end দেখবে:<br>
+
+`X-Original-URL: /admin`
+
+তখন সে মনে করবে: <br>
+
+user /admin access korte chacche এবং admin panel return করে দিবে।
+<br><br><br><br>
+
+# Task 10
+
+![](images/ACV69.png)<br><br>
+![](images/ACV70.png)<br><br>
+`Admin pannel এ যাওয়ার চেষ্টা করলাম access denied দেখাইলো`<br><br>
+![](images/ACV71.png)<br><br>
+`Burpsuit এ যাই`<br>
+![](images/ACV72.png)<br><br>
+`Normally একবার দেখলাম।  কাজ হইলো না। Front end থেকে admin পেলে block করে দিচ্ছে। X-Original-Url: /admin দেই আর GET এ শুধু /।  `
+`এখন Front end "/" পেয়ে block করবে না। আর X-Original-Url backend  `
+`এ কাজ করবে এবং end point change করে দিবে। কাজ শেষ!!!`<br>
+![](images/ACV73.png)<br><br>
+`এবার carlos user delete করতে হবে। তো request line parameters দিয়ে দিলাম। যেহেতু এটি normal হোমপেজ request block করবে না। main কাজ করবে তো X-Original-Url। ``backend কে বলবে /admin/delete তে যাও। `
+`Bypass done`<br>
+![](images/ACV74.png)<br><br>
+`(Solved)`
+
+<br><br><br><br>
+
+# Task 11
+`administrator login করে carlos কে admin access দিলাম`<br>
+`এখন কাজ হলো wiener কে admin access দিতে হবে`<br>
+`এর জন্য wiener এর session ID বসিয়ে try করে দেখলাম হইলো না`<br>
+`block করা`<br>
+`Post er bodole get request দিলে হয়ে গেলো`<br>
+![](images/ACV91.png)<br><br>
+![](images/ACV92.png)<br><br>
+![](images/ACV93.png)<br><br>
+![](images/ACV94.png)<br><br>
+![](images/ACV95.png)<br><br>
+
+
+<br><br><br><br>
+
+# Task 12
+`Multi step process user  এর role change করার জন্য। এখানে দুইটা স্টেপ।  একটায় upgrade user করে। অন্য ধাপে confirmation হয় ঔটার।`<br>
+![](images/ACV75.png)<br><br>
+![](images/ACV76.png)<br><br>
+`Admin login. Give carlos admin access`<br>
+![](images/ACV77.png)<br><br>
+![](images/ACV78.png)<br><br>
+`Burpsuit এ দেখলাম দুইটা reponse`<br>
+![](images/ACV79.png)<br><br>
+![](images/ACV80.png)<br><br>
+`Repeater e gelam. আমাদের কাজ হলো wiener কে admin এর access দেওয়া। তো এখানে আমরা যদি carlos এর session ID টা replace করে wiener করে দিতে পারি তাহলে কাজ হতে পারে।`<br>
+![](images/ACV81.png)<br><br>
+`wiener login করলাম`
+![](images/ACV82.png)<br><br>
+`Burpsuit থেকে wiener এর session ID copy করলাম।`<br>
+![](images/ACV83.png)<br><br><br>
+`session ID বসিয়ে দেখলাম হয়ে গেছে`<br>
+![](images/ACV84.png)<br><br>
+`(Done)`
+
+
+<br><br><br><br>
+
+# Task 13
+`Referer based problem...এখানে server referer চেক করে`<br>
+![](images/ACV85.png)<br><br><br>
+`আগেরটার মতোই admin এ লাগইন করে carlos কে admin দিলাম`<br>
+`এখন আমার wiener কে admin বানাতে হবে`<br>
+![](images/ACV86.png)<br><br>
+![](images/ACV87.png)<br><br>
+![](images/ACV88.png)<br><br>
+`wiener এর session id নিয়ে চেঞ্জ করে দিলেই কাজ শেষ..`<br>
+![](images/ACV89.png)<br><br>
+`(SOLVED)`<br>
+`
+`এই problem ta easily solve হয়ে গেছে যদিও। কিন্তু এখানে referer check করে। যদি /admin হয় তাহলে server access দেয়। কিন্তু যেই হ্যাকার cookies change করতে পারে, সে ``এইটা চেঞ্জ করতে পারবে না!!!`
+`এমন ডেভেলপার হওয়ার চেয়ে না হওয়া ভালো।`<br>
+![](images/ACV90.png)<br><br>
+
+
+
+
+
